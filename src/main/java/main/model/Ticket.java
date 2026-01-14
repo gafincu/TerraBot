@@ -33,8 +33,11 @@ public class Ticket {
     protected String assignedAt;
     protected String solvedAt;
 
-    // CHANGED: List<String> -> List<Comment>
     protected List<Comment> comments = new ArrayList<>();
+
+    // Adaugare camp istoric (ignorat in viewTickets standard)
+    @JsonIgnore
+    protected List<HistoryLog> history = new ArrayList<>();
 
     public Ticket() {}
 
@@ -52,6 +55,7 @@ public class Ticket {
     public String getAssignedAt() { return assignedAt; }
     public String getSolvedAt() { return solvedAt; }
     public List<Comment> getComments() { return comments; }
+    public List<HistoryLog> getHistory() { return history; }
 
     // --- Setters ---
     public void setId(int id) { this.id = id; }
