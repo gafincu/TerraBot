@@ -1,26 +1,70 @@
 package main.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class Ticket {
-    private int id;
-    private String type;
-    private String title;
-    private String description;
-    private String businessPriority; // LOW, MEDIUM, HIGH, CRITICAL
-    private String status = "OPEN";
-    private String expertiseArea;
-    private String reportedBy;
-    private String createdAt;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+        "id", "type", "title", "businessPriority", "status",
+        "reportedBy", "createdAt", "assignedTo", "assignedAt",
+        "solvedAt", "comments"
+})
+public class Ticket {
 
-    // Câmpuri interne gestionate de aplicație
-    private String assignedTo = "";
-    private String assignedAt = "";
-    private String solvedAt = "";
-    private List<Object> comments = new ArrayList<>();
+    protected int id;
+    protected String type;
+    protected String title;
+
+    @JsonIgnore
+    protected String description;
+
+    protected String businessPriority;
+    protected String status;
+
+    @JsonIgnore
+    protected String expertiseArea;
+
+    protected String reportedBy;
+    protected String createdAt;
+    protected String assignedTo;
+    protected String assignedAt;
+    protected String solvedAt;
+
+    // CHANGED: List<String> -> List<Comment>
+    protected List<Comment> comments = new ArrayList<>();
+
+    public Ticket() {}
+
+    // --- Getters ---
+    public int getId() { return id; }
+    public String getType() { return type; }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public String getBusinessPriority() { return businessPriority; }
+    public String getStatus() { return status; }
+    public String getExpertiseArea() { return expertiseArea; }
+    public String getReportedBy() { return reportedBy; }
+    public String getCreatedAt() { return createdAt; }
+    public String getAssignedTo() { return assignedTo; }
+    public String getAssignedAt() { return assignedAt; }
+    public String getSolvedAt() { return solvedAt; }
+    public List<Comment> getComments() { return comments; }
+
+    // --- Setters ---
+    public void setId(int id) { this.id = id; }
+    public void setType(String type) { this.type = type; }
+    public void setTitle(String title) { this.title = title; }
+    public void setDescription(String description) { this.description = description; }
+    public void setBusinessPriority(String businessPriority) { this.businessPriority = businessPriority; }
+    public void setStatus(String status) { this.status = status; }
+    public void setExpertiseArea(String expertiseArea) { this.expertiseArea = expertiseArea; }
+    public void setReportedBy(String reportedBy) { this.reportedBy = reportedBy; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+    public void setAssignedTo(String assignedTo) { this.assignedTo = assignedTo; }
+    public void setAssignedAt(String assignedAt) { this.assignedAt = assignedAt; }
+    public void setSolvedAt(String solvedAt) { this.solvedAt = solvedAt; }
+    public void setComments(List<Comment> comments) { this.comments = comments; }
 }

@@ -1,58 +1,104 @@
 package main;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import main.command.*;
+import main.database.Database;
+import main.model.User;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * main.App represents the main application logic that processes input commands,
- * generates outputs, and writes them to a file
- */
 public class App {
     private App() {
     }
 
     private static final String INPUT_USERS_FIELD = "input/database/users.json";
+    private static final ObjectWriter WRITER = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
-    private static final ObjectWriter WRITER =
-            new ObjectMapper().writer().withDefaultPrettyPrinter();
-
-    /**
-     * Runs the application: reads commands from an input file,
-     * processes them, generates results, and writes them to an output file
-     *
-     * @param inputPath path to the input file containing commands
-     * @param outputPath path to the file where results should be written
-     */
     public static void run(final String inputPath, final String outputPath) {
-        // feel free to change this if needed
-        // however keep 'outputs' variable name to be used for writing
-        List<ObjectNode> outputs = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode outputs = mapper.createArrayNode();
 
-        /*
-            TODO 1 :
-            Load initial user data and commands. we strongly recommend using jackson library.
-            you can use the reading from hw1 as a reference.
-            however you can use some of the more advanced features of
-            jackson library, available here: https://www.baeldung.com/jackson-annotations
-        */
+        Database.reset();
+        Database db = Database.getInstance();
 
-        // TODO 2: process commands.
+        try {
+            File usersFile = new File(INPUT_USERS_FIELD);
+            if (usersFile.exists()) {
+                List<User> users = mapper.readValue(usersFile, new TypeReference<List<User>>() {});
+                db.getUsers().addAll(users);
+            }
 
-        // TODO 3: create objectnodes for output, add them to outputs list.
+            File inputFile = new File(inputPath);
+            JsonNode commandsArray = mapper.readTree(inputFile);
 
-        // DO NOT CHANGE THIS SECTION IN ANY WAY
+            if (commandsArray.isArray()) {
+                for (JsonNode commandNode : commandsArray) {
+                    String commandName = commandNode.get("command").asText();
+                    Command command = null;
+
+                    switch (commandName) {
+                        case "reportTicket":
+                            command = new ReportTicketCommand(commandNode);
+                            break;
+                        case "createMilestone":
+                            command = new CreateMilestoneCommand(commandNode);
+                            break;
+                        case "viewMilestones":
+                            command = new ViewMilestonesCommand(commandNode);
+                            break;
+                        case "assignTicket":
+                            command = new AssignTicketCommand(commandNode);
+                            break;
+                        case "viewTickets":
+                            command = new ViewTicketsCommand(commandNode);
+                            break;
+                        case "undoAssignTicket":
+                            command = new UndoAssignTicketCommand(commandNode);
+                            break;
+                        case "viewAssignedTickets":
+                            command = new ViewAssignedTicketsCommand(commandNode);
+                            break;
+                        case "addComment":
+                            command = new AddCommentCommand(commandNode);
+                            break;
+                        case "undoAddComment":
+                            command = new UndoAddCommentCommand(commandNode);
+                            break;
+                        case "lostInvestors":
+                            try {
+                                File outputFile = new File(outputPath);
+                                outputFile.getParentFile().mkdirs();
+                                WRITER.writeValue(outputFile, outputs);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            return;
+                        default:
+                            break;
+                    }
+
+                    if (command != null) {
+                        command.execute(outputs);
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         try {
             File outputFile = new File(outputPath);
             outputFile.getParentFile().mkdirs();
-            WRITER.withDefaultPrettyPrinter().writeValue(outputFile, outputs);
+            WRITER.writeValue(outputFile, outputs);
         } catch (IOException e) {
-            System.out.println("error writing to output file: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

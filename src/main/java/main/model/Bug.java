@@ -1,15 +1,30 @@
 package main.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
 public class Bug extends Ticket {
-    private String expectedBehavior;
-    private String actualBehavior;
-    private String frequency;
-    private String severity;
-    private String environment;
-    private Integer errorCode;
+    @JsonIgnore private String expectedBehavior;
+    @JsonIgnore private String actualBehavior;
+    @JsonIgnore private String frequency;
+    @JsonIgnore private String severity;
+    @JsonIgnore private String environment;
+    @JsonIgnore private Integer errorCode;
+
+    public String getExpectedBehavior() { return expectedBehavior; }
+    public void setExpectedBehavior(String expectedBehavior) { this.expectedBehavior = expectedBehavior; }
+
+    public String getActualBehavior() { return actualBehavior; }
+    public void setActualBehavior(String actualBehavior) { this.actualBehavior = actualBehavior; }
+
+    public String getFrequency() { return frequency; }
+    public void setFrequency(String frequency) { this.frequency = frequency; }
+
+    public String getSeverity() { return severity; }
+    public void setSeverity(String severity) { this.severity = severity; }
+
+    public String getEnvironment() { return environment; }
+    public void setEnvironment(String environment) { this.environment = environment; }
+
+    public Integer getErrorCode() { return errorCode; }
+    public void setErrorCode(Integer errorCode) { this.errorCode = errorCode; }
 }

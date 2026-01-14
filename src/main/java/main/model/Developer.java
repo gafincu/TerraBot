@@ -1,12 +1,16 @@
 package main.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-@Data
-@EqualsAndHashCode(callSuper = true)
 public class Developer extends User {
     private String hireDate;
-    private String seniority; // JUNIOR, MID, SENIOR
-    private String expertiseArea; // FRONTEND, BACKEND, FULLSTACK etc.
+    private String seniority;
+    private String expertiseArea;
+
+    public String getHireDate() { return hireDate; }
+    public void setHireDate(String hireDate) { this.hireDate = hireDate; }
+
+    public String getSeniority() { return seniority; }
+    public void setSeniority(String seniority) { this.seniority = seniority; }
+
+    public String getExpertiseArea() { return expertiseArea; }
+    public void setExpertiseArea(String expertiseArea) { this.expertiseArea = expertiseArea; }
 }
