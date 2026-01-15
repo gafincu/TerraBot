@@ -24,19 +24,16 @@ public class App {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode outputs = mapper.createArrayNode();
 
-        // Resetare DB la fiecare rulare
         Database.reset();
         Database db = Database.getInstance();
 
         try {
-            // Încărcare utilizatori
             File usersFile = new File(INPUT_USERS_FIELD);
             if (usersFile.exists()) {
                 List<User> users = mapper.readValue(usersFile, new TypeReference<List<User>>() {});
                 db.getUsers().addAll(users);
             }
 
-            // Procesare comenzi
             File inputFile = new File(inputPath);
             JsonNode commandsArray = mapper.readTree(inputFile);
 
@@ -76,16 +73,13 @@ public class App {
                         case "changeStatus":
                             command = new ChangeStatusCommand(commandNode);
                             break;
+                        case "undoChangeStatus":
+                            command = new UndoChangeStatusCommand(commandNode);
+                            break;
                         case "viewTicketHistory":
                             command = new ViewTicketHistoryCommand(commandNode);
                             break;
                         case "lostInvestors":
-                            // Folosim clasa separată LostInvestorsCommand dacă ai creat-o,
-                            // sau lăsăm o implementare simplă aici pentru a nu opri execuția brusc.
-                            // Dacă ai creat fișierul LostInvestorsCommand.java:
-                            // command = new LostInvestorsCommand(commandNode);
-
-                            // Dacă NU ai creat fișierul, poți folosi acest bloc pentru a scrie și ieși:
                             try {
                                 File outputFile = new File(outputPath);
                                 if (outputFile.getParentFile() != null) outputFile.getParentFile().mkdirs();
@@ -94,9 +88,7 @@ public class App {
                                 e.printStackTrace();
                             }
                             return;
-
                         default:
-                            System.err.println("Unknown command: " + commandName);
                             break;
                     }
 
@@ -110,12 +102,9 @@ public class App {
             e.printStackTrace();
         }
 
-        // Scrierea finală a output-ului
         try {
             File outputFile = new File(outputPath);
-            if (outputFile.getParentFile() != null) {
-                outputFile.getParentFile().mkdirs();
-            }
+            if (outputFile.getParentFile() != null) outputFile.getParentFile().mkdirs();
             WRITER.writeValue(outputFile, outputs);
         } catch (IOException e) {
             e.printStackTrace();
