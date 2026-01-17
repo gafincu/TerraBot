@@ -3,7 +3,7 @@ package main.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import main.model.visitor.UserVisitor; // Import necesar dacă folosim visitor pe user
+import main.model.visitor.TicketVisitor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
         "reportedBy", "createdAt", "assignedTo", "assignedAt",
         "solvedAt", "comments"
 })
-public class Ticket {
+public abstract class Ticket {
 
     protected int id;
     protected String type;
@@ -24,7 +24,6 @@ public class Ticket {
 
     protected String businessPriority;
 
-    // Câmp nou pentru a ține minte prioritatea originală
     @JsonIgnore
     protected String initialPriority;
 
@@ -46,13 +45,15 @@ public class Ticket {
 
     public Ticket() {}
 
+    public abstract <R> R accept(TicketVisitor<R> visitor);
+
     // --- Getters ---
     public int getId() { return id; }
     public String getType() { return type; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public String getBusinessPriority() { return businessPriority; }
-    public String getInitialPriority() { return initialPriority; } // Getter nou
+    public String getInitialPriority() { return initialPriority; }
     public String getStatus() { return status; }
     public String getExpertiseArea() { return expertiseArea; }
     public String getReportedBy() { return reportedBy; }
@@ -71,11 +72,12 @@ public class Ticket {
 
     public void setBusinessPriority(String businessPriority) {
         this.businessPriority = businessPriority;
-        // Dacă e prima dată (initialPriority e null), salvăm valoarea
         if (this.initialPriority == null) {
             this.initialPriority = businessPriority;
         }
     }
+
+    public void setInitialPriority(String initialPriority) { this.initialPriority = initialPriority; }
 
     public void setStatus(String status) { this.status = status; }
     public void setExpertiseArea(String expertiseArea) { this.expertiseArea = expertiseArea; }

@@ -42,30 +42,39 @@ public class App {
                     Command command = null;
 
                     switch (commandName) {
+                        case "lostInvestors": command = new LostInvestorsCommand(commandNode); break;
+                        case "startTestingPhase": command = new StartTestingPhaseCommand(commandNode); break;
                         case "reportTicket": command = new ReportTicketCommand(commandNode); break;
+                        case "viewTickets": command = new ViewTicketsCommand(commandNode); break;
+                        case "addComment": command = new AddCommentCommand(commandNode); break;
+                        case "undoAddComment": command = new UndoAddCommentCommand(commandNode); break;
                         case "createMilestone": command = new CreateMilestoneCommand(commandNode); break;
                         case "viewMilestones": command = new ViewMilestonesCommand(commandNode); break;
                         case "assignTicket": command = new AssignTicketCommand(commandNode); break;
-                        case "viewTickets": command = new ViewTicketsCommand(commandNode); break;
                         case "undoAssignTicket": command = new UndoAssignTicketCommand(commandNode); break;
                         case "viewAssignedTickets": command = new ViewAssignedTicketsCommand(commandNode); break;
-                        case "addComment": command = new AddCommentCommand(commandNode); break;
-                        case "undoAddComment": command = new UndoAddCommentCommand(commandNode); break;
                         case "changeStatus": command = new ChangeStatusCommand(commandNode); break;
                         case "undoChangeStatus": command = new UndoChangeStatusCommand(commandNode); break;
                         case "viewTicketHistory": command = new ViewTicketHistoryCommand(commandNode); break;
-                        case "lostInvestors":
-                            try {
-                                File outputFile = new File(outputPath);
-                                if (outputFile.getParentFile() != null) outputFile.getParentFile().mkdirs();
-                                WRITER.writeValue(outputFile, outputs);
-                            } catch (IOException e) { e.printStackTrace(); }
-                            return;
+                        case "search": command = new SearchCommand(commandNode); break;
+
+                        // --- LINII OBLIGATORII PENTRU TESTELE 12, 13, 14 ---
+                        case "viewNotifications": command = new ViewNotificationsCommand(commandNode); break;
+                        case "generatePerformanceReport": command = new GeneratePerformanceReportCommand(commandNode); break;
+                        case "generateTicketRiskReport": command = new GenerateTicketRiskReportCommand(commandNode); break;
+                        case "generateResolutionEfficiencyReport": command = new GenerateResolutionEfficiencyReportCommand(commandNode); break;
+                        case "generateCustomerImpactReport": command = new GenerateCustomerImpactReportCommand(commandNode); break;
+                        case "appStabilityReport": command = new AppStabilityReportCommand(commandNode); break;
+
                         default: break;
                     }
 
                     if (command != null) {
                         command.execute(outputs);
+                        if ("lostInvestors".equals(commandName)) {
+                            writeOutput(outputPath, outputs);
+                            return;
+                        }
                     }
                 }
             }
@@ -73,6 +82,10 @@ public class App {
             e.printStackTrace();
         }
 
+        writeOutput(outputPath, outputs);
+    }
+
+    private static void writeOutput(String outputPath, ArrayNode outputs) {
         try {
             File outputFile = new File(outputPath);
             if (outputFile.getParentFile() != null) outputFile.getParentFile().mkdirs();

@@ -1,30 +1,35 @@
 package main.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import main.model.visitor.TicketVisitor;
 
 public class Bug extends Ticket {
-    @JsonIgnore private String expectedBehavior;
-    @JsonIgnore private String actualBehavior;
-    @JsonIgnore private String frequency;
-    @JsonIgnore private String severity;
-    @JsonIgnore private String environment;
-    @JsonIgnore private Integer errorCode;
+    private String expectedBehavior;
+    private String actualBehavior;
+    private String frequency;
+    private String severity;
+    private String environment;
+    private Integer errorCode;
 
-    public String getExpectedBehavior() { return expectedBehavior; }
-    public void setExpectedBehavior(String expectedBehavior) { this.expectedBehavior = expectedBehavior; }
+    @Override
+    public <R> R accept(TicketVisitor<R> visitor) {
+        return visitor.visit(this);
+    }
 
-    public String getActualBehavior() { return actualBehavior; }
-    public void setActualBehavior(String actualBehavior) { this.actualBehavior = actualBehavior; }
+    // GETTERS (Ignorate la serializare)
+    @JsonIgnore public String getExpectedBehavior() { return expectedBehavior; }
+    @JsonIgnore public String getActualBehavior() { return actualBehavior; }
+    @JsonIgnore public String getFrequency() { return frequency; }
+    @JsonIgnore public String getSeverity() { return severity; }
+    @JsonIgnore public String getEnvironment() { return environment; }
+    @JsonIgnore public Integer getErrorCode() { return errorCode; }
 
-    public String getFrequency() { return frequency; }
-    public void setFrequency(String frequency) { this.frequency = frequency; }
-
-    public String getSeverity() { return severity; }
-    public void setSeverity(String severity) { this.severity = severity; }
-
-    public String getEnvironment() { return environment; }
-    public void setEnvironment(String environment) { this.environment = environment; }
-
-    public Integer getErrorCode() { return errorCode; }
-    public void setErrorCode(Integer errorCode) { this.errorCode = errorCode; }
+    // SETTERS (Folosite la deserializare)
+    @JsonProperty("expectedBehavior") public void setExpectedBehavior(String expectedBehavior) { this.expectedBehavior = expectedBehavior; }
+    @JsonProperty("actualBehavior") public void setActualBehavior(String actualBehavior) { this.actualBehavior = actualBehavior; }
+    @JsonProperty("frequency") public void setFrequency(String frequency) { this.frequency = frequency; }
+    @JsonProperty("severity") public void setSeverity(String severity) { this.severity = severity; }
+    @JsonProperty("environment") public void setEnvironment(String environment) { this.environment = environment; }
+    @JsonProperty("errorCode") public void setErrorCode(Integer errorCode) { this.errorCode = errorCode; }
 }

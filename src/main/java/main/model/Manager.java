@@ -11,7 +11,6 @@ public class Manager extends User {
 
     @Override
     public <R> R accept(UserVisitor<R> visitor) {
-        // Aici se face dispatch-ul dinamic. Java știe că 'this' este Manager.
         return visitor.visit(this);
     }
 
