@@ -1,9 +1,18 @@
 package main.model;
 
+import main.model.visitor.UserVisitor;
+
 public class Developer extends User {
     private String hireDate;
     private String seniority;
     private String expertiseArea;
+
+    public Developer() {}
+
+    @Override
+    public <R> R accept(UserVisitor<R> visitor) {
+        return visitor.visit(this);
+    }
 
     public String getHireDate() { return hireDate; }
     public void setHireDate(String hireDate) { this.hireDate = hireDate; }

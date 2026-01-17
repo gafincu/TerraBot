@@ -14,8 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class App {
-    private App() {
-    }
+    private App() { }
 
     private static final String INPUT_USERS_FIELD = "input/database/users.json";
     private static final ObjectWriter WRITER = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -43,53 +42,26 @@ public class App {
                     Command command = null;
 
                     switch (commandName) {
-                        case "reportTicket":
-                            command = new ReportTicketCommand(commandNode);
-                            break;
-                        case "createMilestone":
-                            command = new CreateMilestoneCommand(commandNode);
-                            break;
-                        case "viewMilestones":
-                            command = new ViewMilestonesCommand(commandNode);
-                            break;
-                        case "assignTicket":
-                            command = new AssignTicketCommand(commandNode);
-                            break;
-                        case "viewTickets":
-                            command = new ViewTicketsCommand(commandNode);
-                            break;
-                        case "undoAssignTicket":
-                            command = new UndoAssignTicketCommand(commandNode);
-                            break;
-                        case "viewAssignedTickets":
-                            command = new ViewAssignedTicketsCommand(commandNode);
-                            break;
-                        case "addComment":
-                            command = new AddCommentCommand(commandNode);
-                            break;
-                        case "undoAddComment":
-                            command = new UndoAddCommentCommand(commandNode);
-                            break;
-                        case "changeStatus":
-                            command = new ChangeStatusCommand(commandNode);
-                            break;
-                        case "undoChangeStatus":
-                            command = new UndoChangeStatusCommand(commandNode);
-                            break;
-                        case "viewTicketHistory":
-                            command = new ViewTicketHistoryCommand(commandNode);
-                            break;
+                        case "reportTicket": command = new ReportTicketCommand(commandNode); break;
+                        case "createMilestone": command = new CreateMilestoneCommand(commandNode); break;
+                        case "viewMilestones": command = new ViewMilestonesCommand(commandNode); break;
+                        case "assignTicket": command = new AssignTicketCommand(commandNode); break;
+                        case "viewTickets": command = new ViewTicketsCommand(commandNode); break;
+                        case "undoAssignTicket": command = new UndoAssignTicketCommand(commandNode); break;
+                        case "viewAssignedTickets": command = new ViewAssignedTicketsCommand(commandNode); break;
+                        case "addComment": command = new AddCommentCommand(commandNode); break;
+                        case "undoAddComment": command = new UndoAddCommentCommand(commandNode); break;
+                        case "changeStatus": command = new ChangeStatusCommand(commandNode); break;
+                        case "undoChangeStatus": command = new UndoChangeStatusCommand(commandNode); break;
+                        case "viewTicketHistory": command = new ViewTicketHistoryCommand(commandNode); break;
                         case "lostInvestors":
                             try {
                                 File outputFile = new File(outputPath);
                                 if (outputFile.getParentFile() != null) outputFile.getParentFile().mkdirs();
                                 WRITER.writeValue(outputFile, outputs);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            } catch (IOException e) { e.printStackTrace(); }
                             return;
-                        default:
-                            break;
+                        default: break;
                     }
 
                     if (command != null) {
@@ -97,7 +69,6 @@ public class App {
                     }
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

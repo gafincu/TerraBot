@@ -3,6 +3,7 @@ package main.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import main.model.visitor.UserVisitor; // Import necesar dacă folosim visitor pe user
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,11 @@ public class Ticket {
     protected String description;
 
     protected String businessPriority;
+
+    // Câmp nou pentru a ține minte prioritatea originală
+    @JsonIgnore
+    protected String initialPriority;
+
     protected String status;
 
     @JsonIgnore
@@ -35,7 +41,6 @@ public class Ticket {
 
     protected List<Comment> comments = new ArrayList<>();
 
-    // Adaugare camp istoric (ignorat in viewTickets standard)
     @JsonIgnore
     protected List<HistoryLog> history = new ArrayList<>();
 
@@ -47,6 +52,7 @@ public class Ticket {
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public String getBusinessPriority() { return businessPriority; }
+    public String getInitialPriority() { return initialPriority; } // Getter nou
     public String getStatus() { return status; }
     public String getExpertiseArea() { return expertiseArea; }
     public String getReportedBy() { return reportedBy; }
@@ -62,7 +68,15 @@ public class Ticket {
     public void setType(String type) { this.type = type; }
     public void setTitle(String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }
-    public void setBusinessPriority(String businessPriority) { this.businessPriority = businessPriority; }
+
+    public void setBusinessPriority(String businessPriority) {
+        this.businessPriority = businessPriority;
+        // Dacă e prima dată (initialPriority e null), salvăm valoarea
+        if (this.initialPriority == null) {
+            this.initialPriority = businessPriority;
+        }
+    }
+
     public void setStatus(String status) { this.status = status; }
     public void setExpertiseArea(String expertiseArea) { this.expertiseArea = expertiseArea; }
     public void setReportedBy(String reportedBy) { this.reportedBy = reportedBy; }
