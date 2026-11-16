@@ -2,24 +2,40 @@ package main.model;
 
 import main.model.visitor.UserVisitor;
 
-public class Developer extends User {
+public final class Developer extends User {
     private String hireDate;
     private String seniority;
     private String expertiseArea;
 
-    public Developer() {}
+    public Developer() {
+    }
 
     @Override
-    public <R> R accept(UserVisitor<R> visitor) {
+    public <R> R accept(final UserVisitor<R> visitor) {
         return visitor.visit(this);
     }
 
-    public String getHireDate() { return hireDate; }
-    public void setHireDate(String hireDate) { this.hireDate = hireDate; }
+    public String getHireDate() {
+        return hireDate;
+    }
 
-    public String getSeniority() { return seniority; }
-    public void setSeniority(String seniority) { this.seniority = seniority; }
+    public void setHireDate(final String hireDate) {
+        this.hireDate = hireDate;
+    }
 
-    public String getExpertiseArea() { return expertiseArea; }
-    public void setExpertiseArea(String expertiseArea) { this.expertiseArea = expertiseArea; }
+    public String getSeniority() {
+        return seniority;
+    }
+
+    public void setSeniority(final String seniority) {
+        this.seniority = seniority;
+    }
+
+    public String getExpertiseArea() {
+        return expertiseArea;
+    }
+
+    public void setExpertiseArea(final String expertiseArea) {
+        this.expertiseArea = expertiseArea;
+    }
 }

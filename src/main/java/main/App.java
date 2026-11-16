@@ -5,20 +5,29 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import main.command.*;
+import main.command.Command;
 import main.database.Database;
+import main.factory.CommandFactory;
 import main.model.User;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class App {
-    private App() { }
+public final class App {
+    private App() {
+    }
 
     private static final String INPUT_USERS_FIELD = "input/database/users.json";
-    private static final ObjectWriter WRITER = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    private static final ObjectWriter WRITER = new ObjectMapper().writer()
+            .withDefaultPrettyPrinter();
 
+    /**
+     * Metoda principala de rulare a aplicatiei.
+     *
+     * @param inputPath  calea catre fisierul de input
+     * @param outputPath calea catre fisierul de output
+     */
     public static void run(final String inputPath, final String outputPath) {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode outputs = mapper.createArrayNode();
@@ -29,7 +38,9 @@ public class App {
         try {
             File usersFile = new File(INPUT_USERS_FIELD);
             if (usersFile.exists()) {
-                List<User> users = mapper.readValue(usersFile, new TypeReference<List<User>>() {});
+                List<User> users = mapper.readValue(usersFile,
+                        new TypeReference<List<User>>() {
+                        });
                 db.getUsers().addAll(users);
             }
 
@@ -37,44 +48,27 @@ public class App {
             JsonNode commandsArray = mapper.readTree(inputFile);
 
             if (commandsArray.isArray()) {
+                CommandFactory commandFactory = CommandFactory.getInstance();
+
                 for (JsonNode commandNode : commandsArray) {
                     String commandName = commandNode.get("command").asText();
-                    Command command = null;
 
-                    switch (commandName) {
-                        case "lostInvestors": command = new LostInvestorsCommand(commandNode); break;
-                        case "startTestingPhase": command = new StartTestingPhaseCommand(commandNode); break;
-                        case "reportTicket": command = new ReportTicketCommand(commandNode); break;
-                        case "viewTickets": command = new ViewTicketsCommand(commandNode); break;
-                        case "addComment": command = new AddCommentCommand(commandNode); break;
-                        case "undoAddComment": command = new UndoAddCommentCommand(commandNode); break;
-                        case "createMilestone": command = new CreateMilestoneCommand(commandNode); break;
-                        case "viewMilestones": command = new ViewMilestonesCommand(commandNode); break;
-                        case "assignTicket": command = new AssignTicketCommand(commandNode); break;
-                        case "undoAssignTicket": command = new UndoAssignTicketCommand(commandNode); break;
-                        case "viewAssignedTickets": command = new ViewAssignedTicketsCommand(commandNode); break;
-                        case "changeStatus": command = new ChangeStatusCommand(commandNode); break;
-                        case "undoChangeStatus": command = new UndoChangeStatusCommand(commandNode); break;
-                        case "viewTicketHistory": command = new ViewTicketHistoryCommand(commandNode); break;
-                        case "search": command = new SearchCommand(commandNode); break;
+                    try {
+                        Command command = commandFactory.createCommand(commandName, commandNode);
 
-                        // --- LINII OBLIGATORII PENTRU TESTELE 12, 13, 14 ---
-                        case "viewNotifications": command = new ViewNotificationsCommand(commandNode); break;
-                        case "generatePerformanceReport": command = new GeneratePerformanceReportCommand(commandNode); break;
-                        case "generateTicketRiskReport": command = new GenerateTicketRiskReportCommand(commandNode); break;
-                        case "generateResolutionEfficiencyReport": command = new GenerateResolutionEfficiencyReportCommand(commandNode); break;
-                        case "generateCustomerImpactReport": command = new GenerateCustomerImpactReportCommand(commandNode); break;
-                        case "appStabilityReport": command = new AppStabilityReportCommand(commandNode); break;
+                        if (command != null) {
+                            command.execute(outputs);
 
-                        default: break;
-                    }
-
-                    if (command != null) {
-                        command.execute(outputs);
-                        if ("lostInvestors".equals(commandName)) {
-                            writeOutput(outputPath, outputs);
-                            return;
+                            if ("lostInvestors".equals(commandName)) {
+                                writeOutput(outputPath, outputs);
+                                return;
+                            }
+                        } else {
+                            continue;
                         }
+                    } catch (Exception e) {
+                        System.err.println("Eroare la executia comenzii: " + commandName);
+                        e.printStackTrace();
                     }
                 }
             }
@@ -85,10 +79,12 @@ public class App {
         writeOutput(outputPath, outputs);
     }
 
-    private static void writeOutput(String outputPath, ArrayNode outputs) {
+    private static void writeOutput(final String outputPath, final ArrayNode outputs) {
         try {
             File outputFile = new File(outputPath);
-            if (outputFile.getParentFile() != null) outputFile.getParentFile().mkdirs();
+            if (outputFile.getParentFile() != null) {
+                outputFile.getParentFile().mkdirs();
+            }
             WRITER.writeValue(outputFile, outputs);
         } catch (IOException e) {
             e.printStackTrace();

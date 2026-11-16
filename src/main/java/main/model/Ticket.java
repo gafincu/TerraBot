@@ -1,18 +1,26 @@
 package main.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import main.model.visitor.TicketVisitor;
+
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "id", "type", "title", "businessPriority", "status",
-        "reportedBy", "createdAt", "assignedTo", "assignedAt",
-        "solvedAt", "comments"
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type",
+        visible = true
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Bug.class, name = "BUG"),
+        @JsonSubTypes.Type(value = FeatureRequest.class, name = "FEATURE_REQUEST"),
+        @JsonSubTypes.Type(value = UiFeedback.class, name = "UI_FEEDBACK")
 })
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class Ticket {
 
     protected int id;
@@ -43,48 +51,135 @@ public abstract class Ticket {
     @JsonIgnore
     protected List<HistoryLog> history = new ArrayList<>();
 
-    public Ticket() {}
+    public Ticket() {
+    }
 
     public abstract <R> R accept(TicketVisitor<R> visitor);
 
-    // --- Getters ---
-    public int getId() { return id; }
-    public String getType() { return type; }
-    public String getTitle() { return title; }
-    public String getDescription() { return description; }
-    public String getBusinessPriority() { return businessPriority; }
-    public String getInitialPriority() { return initialPriority; }
-    public String getStatus() { return status; }
-    public String getExpertiseArea() { return expertiseArea; }
-    public String getReportedBy() { return reportedBy; }
-    public String getCreatedAt() { return createdAt; }
-    public String getAssignedTo() { return assignedTo; }
-    public String getAssignedAt() { return assignedAt; }
-    public String getSolvedAt() { return solvedAt; }
-    public List<Comment> getComments() { return comments; }
-    public List<HistoryLog> getHistory() { return history; }
+    /**
+     * Returneaza ID-ul tichetului.
+     * @return id.
+     */
+    public final int getId() {
+        return id;
+    }
 
-    // --- Setters ---
-    public void setId(int id) { this.id = id; }
-    public void setType(String type) { this.type = type; }
-    public void setTitle(String title) { this.title = title; }
-    public void setDescription(String description) { this.description = description; }
+    public final String getType() {
+        return type;
+    }
 
-    public void setBusinessPriority(String businessPriority) {
+    public final String getTitle() {
+        return title;
+    }
+
+    public final String getDescription() {
+        return description;
+    }
+
+    public final String getBusinessPriority() {
+        return businessPriority;
+    }
+
+    public final String getInitialPriority() {
+        return initialPriority;
+    }
+
+    public final String getStatus() {
+        return status;
+    }
+
+    public final String getExpertiseArea() {
+        return expertiseArea;
+    }
+
+    public final String getReportedBy() {
+        return reportedBy;
+    }
+
+    public final String getCreatedAt() {
+        return createdAt;
+    }
+
+    public final String getAssignedTo() {
+        return assignedTo;
+    }
+
+    public final String getAssignedAt() {
+        return assignedAt;
+    }
+
+    public final String getSolvedAt() {
+        return solvedAt;
+    }
+
+    public final List<Comment> getComments() {
+        return comments;
+    }
+
+    public final List<HistoryLog> getHistory() {
+        return history;
+    }
+
+    public final void setId(final int id) {
+        this.id = id;
+    }
+
+    public final void setType(final String type) {
+        this.type = type;
+    }
+
+    public final void setTitle(final String title) {
+        this.title = title;
+    }
+
+    public final void setDescription(final String description) {
+        this.description = description;
+    }
+
+    /**
+     * Seteaza prioritatea de business.
+     * @param businessPriority prioritatea.
+     */
+    public final void setBusinessPriority(final String businessPriority) {
         this.businessPriority = businessPriority;
         if (this.initialPriority == null) {
             this.initialPriority = businessPriority;
         }
     }
 
-    public void setInitialPriority(String initialPriority) { this.initialPriority = initialPriority; }
+    public final void setInitialPriority(final String initialPriority) {
+        this.initialPriority = initialPriority;
+    }
 
-    public void setStatus(String status) { this.status = status; }
-    public void setExpertiseArea(String expertiseArea) { this.expertiseArea = expertiseArea; }
-    public void setReportedBy(String reportedBy) { this.reportedBy = reportedBy; }
-    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
-    public void setAssignedTo(String assignedTo) { this.assignedTo = assignedTo; }
-    public void setAssignedAt(String assignedAt) { this.assignedAt = assignedAt; }
-    public void setSolvedAt(String solvedAt) { this.solvedAt = solvedAt; }
-    public void setComments(List<Comment> comments) { this.comments = comments; }
+    public final void setStatus(final String status) {
+        this.status = status;
+    }
+
+    public final void setExpertiseArea(final String expertiseArea) {
+        this.expertiseArea = expertiseArea;
+    }
+
+    public final void setReportedBy(final String reportedBy) {
+        this.reportedBy = reportedBy;
+    }
+
+    public final void setCreatedAt(final String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public final void setAssignedTo(final String assignedTo) {
+        this.assignedTo = assignedTo;
+    }
+
+    public final void setAssignedAt(final String assignedAt) {
+        this.assignedAt = assignedAt;
+    }
+
+    public final void setSolvedAt(final String solvedAt) {
+        this.solvedAt = solvedAt;
+    }
+
+    public final void setComments(final List<Comment> comments) {
+        this.comments = comments;
+    }
 }

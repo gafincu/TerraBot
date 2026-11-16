@@ -25,26 +25,46 @@ public abstract class User {
     private String role;
 
     @JsonIgnore
-    private List<String> notifications = new ArrayList<>();
+    private final List<String> notifications = new ArrayList<>();
 
-    public User() {}
+    public User() {
+    }
 
     public abstract <R> R accept(UserVisitor<R> visitor);
 
-    public void addNotification(String message) {
+    /**
+     * Adauga o notificare.
+     * @param message mesajul.
+     */
+    public final void addNotification(final String message) {
         this.notifications.add(message);
     }
 
-    public List<String> getNotifications() {
+    public final List<String> getNotifications() {
         return notifications;
     }
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public final String getUsername() {
+        return username;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public final void setUsername(final String username) {
+        this.username = username;
+    }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public final String getEmail() {
+        return email;
+    }
+
+    public final void setEmail(final String email) {
+        this.email = email;
+    }
+
+    public final String getRole() {
+        return role;
+    }
+
+    public final void setRole(final String role) {
+        this.role = role;
+    }
 }

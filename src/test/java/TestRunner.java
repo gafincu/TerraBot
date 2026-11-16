@@ -69,7 +69,7 @@ public class TestRunner {
         );
     }
 
-    @ParameterizedTest(name = "Test {0}")
+    @ParameterizedTest(name = "Test {0}, {1}, {2}, {3}, {4}")
     @MethodSource("data")
     public void run(
             final String testName,
